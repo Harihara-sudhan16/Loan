@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Car Loan Application</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #f3f4f7, #dbe9f4);
+      animation: bgShift 20s infinite alternate;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    @keyframes bgShift {
+      0% {
+        background: linear-gradient(135deg, #f3f4f7, #dbe9f4);
+      }
+      100% {
+        background: linear-gradient(135deg, #e3f2fd, #fdfcfb);
+      }
+    }
+
+    header {
+      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+      color: #fff;
+      text-align: center;
+      padding: 25px 10px;
+      font-size: 30px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+
+    footer {
+      background-color: #2c5364;
+      color: #fff;
+      text-align: center;
+      padding: 15px;
+      font-size: 14px;
+      margin-top: auto;
+    }
+
+    .form-container {
+      background: #ffffffd9;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      width: 90%;
+      max-width: 550px;
+      margin: 40px auto;
+      backdrop-filter: blur(5px);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #003366;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    .submit-btn {
+      background: #003366;
+      color: white;
+      padding: 14px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+      transition: 0.3s;
+    }
+
+    .submit-btn:hover {
+      background-color: #0052cc;
+    }
+
+    /* Floating Icon Buttons */
+    .floating-icon {
+      position: fixed;
+      top: 50%;
+      right: 20px;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      z-index: 1001;
+    }
+
+    .icon-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: #003366;
+      color: white;
+      font-size: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      transition: background 0.3s;
+    }
+
+    .icon-btn:hover {
+      background-color: #0052cc;
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.6);
+    }
+
+    .modal-content {
+      background-color: #fff;
+      margin: 6% auto;
+      padding: 20px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 450px;
+      box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2);
+      position: relative;
+    }
+
+    .video-modal-content {
+      max-width: 720px;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 22px;
+      color: red;
+      cursor: pointer;
+    }
+
+    .modal-content h3 {
+      text-align: center;
+      color: #003366;
+      margin-bottom: 20px;
+    }
+
+    .modal-content input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    #emiResult {
+      text-align: center;
+      font-weight: bold;
+      color: green;
+      margin-top: 10px;
+    }
+
+    .emi-btn {
+      background-color: #28a745;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      width: 100%;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .emi-btn:hover {
+      background-color: #218838;
+    }
+
+    video {
+      width: 100%;
+      height: auto;
+      border-radius: 10px;
+      outline: none;
+    }
+
+    @media (max-width: 600px) {
+      .modal-content {
+        width: 95%;
+      }
+
+      .floating-icon {
+        top: auto;
+        bottom: 20px;
+        right: 10px;
+        transform: none;
+        flex-direction: row;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>🚗 Car Loan Application</header>
+
+  <!-- Floating Icon Buttons -->
+  <div class="floating-icon">
+    <div class="icon-btn" onclick="openEMIModal()" title="Open EMI Calculator">📊</div>
+    <div class="icon-btn" onclick="openVideoModal()" title="Watch Tutorial">🎥</div>
+  </div>
+
+  <div class="form-container">
+    <form id="carLoanForm" onsubmit="submitCarLoan(event)">
+      <label for="name">Full Name</label>
+      <input type="text" id="name" required>
+
+      <label for="email">Email</label>
+      <input type="email" id="email" required>
+
+      <label for="phone">Phone Number</label>
+      <input type="tel" id="phone" required>
+
+      <label for="amount">Loan Amount (INR)</label>
+      <input type="number" id="amount" required>
+
+      <label for="carModel">Car Model</label>
+      <input type="text" id="carModel" required>
+
+      <label for="employment">Employment Type</label>
+      <select id="employment" required>
+        <option value="">Select</option>
+        <option value="salaried">Salaried</option>
+        <option value="self-employed">Self-Employed</option>
+      </select>
+
+      <label for="address">Residential Address</label>
+      <textarea id="address" rows="3" required></textarea>
+
+      <label for="idProof">Upload ID Proof</label>
+      <input type="file" id="idProof" accept=".pdf,.jpg,.jpeg,.png" required>
+
+      <button type="submit" class="submit-btn">📩 Submit Application</button>
+    </form>
+  </div>
+
+  <!-- EMI Calculator Modal -->
+  <div id="emiModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeEMIModal()">&times;</span>
+      <h3>📊 EMI Calculator</h3>
+      <input type="number" id="loanAmount" placeholder="Loan Amount (₹)">
+      <input type="number" id="interestRate" placeholder="Interest Rate (%)">
+      <input type="number" id="loanTenure" placeholder="Tenure (Years)">
+      <button class="emi-btn" onclick="calculateEMI()">Calculate EMI</button>
+      <div id="emiResult"></div>
+    </div>
+  </div>
+
+  <!-- Tutorial Video Modal -->
+  <div id="videoModal" class="modal">
+    <div class="modal-content video-modal-content">
+      <span class="close-btn" onclick="closeVideoModal()">&times;</span>
+      <h3>🎥 How to Apply for a Car Loan</h3>
+      <video controls>
+        <source src="car.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2025 SBOV Loan Services | Powered by SBOV
+  </footer>
+
+  <script>
+    function submitCarLoan(event) {
+      event.preventDefault();
+      alert("✅ Your car loan application has been submitted!");
+      document.getElementById("carLoanForm").reset();
+    }
+
+    function openEMIModal() {
+      document.getElementById("emiModal").style.display = "block";
+    }
+
+    function closeEMIModal() {
+      document.getElementById("emiModal").style.display = "none";
+    }
+
+    function calculateEMI() {
+      const P = parseFloat(document.getElementById("loanAmount").value);
+      const annualRate = parseFloat(document.getElementById("interestRate").value);
+      const tenureYears = parseFloat(document.getElementById("loanTenure").value);
+
+      if (!P || !annualRate || !tenureYears) {
+        alert("Please fill all EMI fields.");
+        return;
+      }
+
+      const R = annualRate / 12 / 100;
+      const N = tenureYears * 12;
+      const emi = (P * R * Math.pow(1 + R, N)) / (Math.pow(1 + R, N) - 1);
+      document.getElementById("emiResult").innerText = `Your Monthly EMI is ₹${emi.toFixed(2)}`;
+    }
+
+    function openVideoModal() {
+      document.getElementById("videoModal").style.display = "block";
+    }
+
+    function closeVideoModal() {
+      document.getElementById("videoModal").style.display = "none";
+    }
+
+    window.onclick = function(event) {
+      if (event.target === document.getElementById("emiModal")) {
+        closeEMIModal();
+      }
+      if (event.target === document.getElementById("videoModal")) {
+        closeVideoModal();
+      }
+    };
+  </script>
+
+</body>
+</html>
